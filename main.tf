@@ -3,7 +3,7 @@ resource "aws_eks_cluster" "eks_cluster" {
   role_arn = aws_iam_role.controlplane.arn
 
   vpc_config {
-    subnet_ids = module.vpc.public_subnets
+    subnet_ids = module.vpc.private_subnets
   }
 
   # Ensure that IAM Role permissions are created before and deleted after EKS Cluster handling.
@@ -20,10 +20,10 @@ resource "aws_eks_node_group" "node_group" {
   cluster_name    = aws_eks_cluster.eks_cluster.name
   node_group_name = "group1"
   node_role_arn   = aws_iam_role.worker_node.arn
-  subnet_ids      = module.vpc.public_subnets
+  subnet_ids      = module.vpc.private_subnets
 
-  ami_type       = var.ami_type
-  instance_types = var.instance_types
+  ami_type       = "AL2_x86_64"
+  instance_types = ["t2.micro"]
 
   scaling_config {
     desired_size = 2
@@ -33,6 +33,10 @@ resource "aws_eks_node_group" "node_group" {
 
   update_config {
     max_unavailable = 1
+  }
+
+  remote_access {
+    ec2_ssh_key = "tf-example"
   }
 
   # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.

@@ -11,6 +11,8 @@ module "vpc" {
   private_subnets = var.private_subnets
   public_subnets  = var.public_subnets
 
+  map_public_ip_on_launch = true
+
   enable_nat_gateway   = true
   single_nat_gateway   = true
   enable_dns_hostnames = true
@@ -19,15 +21,19 @@ module "vpc" {
     Terraform   = "true"
     Environment = "EKS"
   }
+
   vpc_tags = {
     Name = "main-vpc"
   }
+
   igw_tags = {
     Name = "main-igw"
   }
+
   nat_gateway_tags = {
     Name = "main-nat"
   }
+
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/elb"                      = 1
