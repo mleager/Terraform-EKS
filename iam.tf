@@ -1,5 +1,5 @@
 resource "aws_iam_role" "controlplane" {
-  name_prefix = var.env_code
+  name_prefix = "${local.cluster_name}-"
 
   assume_role_policy = jsonencode({
     Statement = [{
@@ -31,7 +31,7 @@ resource "aws_iam_role_policy_attachment" "vpc_resource_controller" {
 }
 
 resource "aws_iam_role" "worker_node" {
-  name_prefix = var.env_code
+  name_prefix = "${local.cluster_name}-"
 
   assume_role_policy = jsonencode({
     Statement = [{
