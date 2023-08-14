@@ -1,19 +1,16 @@
-data "aws_iam_policy_document" "assume_role" {
-  statement {
-    effect = "Allow"
-
-    principals {
-      type        = "Service"
-      identifiers = ["eks.amazonaws.com"]
-    }
-
-    actions = ["sts:AssumeRole"]
-  }
-}
-
 resource "aws_iam_role" "controlplane" {
-  name               = "eks-cluster-role"
-  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+  name_prefix = "${local.cluster_name}-"
+
+  assume_role_policy = jsonencode({
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "eks.amazonaws.com"
+      }
+    }]
+    Version = "2012-10-17"
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_policy" {
@@ -34,7 +31,7 @@ resource "aws_iam_role_policy_attachment" "vpc_resource_controller" {
 }
 
 resource "aws_iam_role" "worker_node" {
-  name = "eks-node-group-example"
+  name_prefix = "${local.cluster_name}-"
 
   assume_role_policy = jsonencode({
     Statement = [{
