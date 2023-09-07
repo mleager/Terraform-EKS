@@ -1,6 +1,8 @@
 # Terraform-EKS
 Deploy EKS via Terraform
 
+- Basic Order -
+
 1. Use AWS VPC module for:
     - VPC
     - IGW
@@ -8,13 +10,18 @@ Deploy EKS via Terraform
 
 2. Deploy EKS using EKS Cluster and Node Group resources
 
-3. Use AWS IAM Role & Policy Attachment resources
+3. Use AWS IAM Role & Policy Attachment resources for Cluster and Node Group(s)
 
 4. Deploy AWS ALB Ingress Controller and accompanying resources:
+
     - https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/docs/deploy/installation.md
 
     - https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.6/deploy/installation/
 
+
+#########################################################
+
+# Using eskctl to Associate OIDC, Create Policy, and attach to ServiceAccount
 
 1. 
 eksctl utils associate-iam-oidc-provider \
@@ -55,3 +62,10 @@ kubectl apply -f manifests/v2_6_0_ingclass.yaml
     MountVolume.SetUp failed for volume "cert" : secret "aws-load-balancer-webhook-tls" not found
 
     * NOTE: Possibly an error with cert-manager 
+
+    UPDATE: 
+        1. Requires "manifests/v2_6_0_full.yaml" to be run twice, 
+            as its trying to use the resources that it's creating
+
+        2. Current instance_type of "t2.micro" does not have enough
+           capacity to contain the necessary Pods
