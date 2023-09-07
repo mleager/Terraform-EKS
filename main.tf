@@ -3,7 +3,13 @@ resource "aws_eks_cluster" "eks_cluster" {
   role_arn = aws_iam_role.controlplane.arn
 
   vpc_config {
-    subnet_ids              = module.vpc.private_subnets
+    subnet_ids = [
+      module.vpc.public_subnets[0],
+      module.vpc/public_subnets[1],
+      module.vpc.private_subnets[0], 
+      module.vpc.private_subnets[1]
+    ]
+
     endpoint_private_access = true
     public_access_cidrs     = ["76.153.164.196/32"]
   }
