@@ -652,15 +652,18 @@ spec:
       subresources:
         status: {}
 ---
-# apiVersion: v1
-# kind: ServiceAccount
-# metadata:
-#   labels:
-#     app.kubernetes.io/component: controller
-#     app.kubernetes.io/name: aws-load-balancer-controller
-#   name: aws-load-balancer-controller
-#   namespace: kube-system
-# ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/name: aws-load-balancer-controller
+  name: aws-load-balancer-controller
+  namespace: kube-system
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::600005164000:role/aws-load-balancer-controller-role
+    ###################################
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -919,7 +922,7 @@ spec:
     spec:
       containers:
         - args:
-            - --cluster-name=tf-cluster
+            - --cluster-name=eks-aws-lb ####################################
             - --ingress-class=alb
           image: public.ecr.aws/eks/aws-load-balancer-controller:v2.6.0
           livenessProbe:
