@@ -73,14 +73,17 @@ $ kubectl get svc
         https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
 
     $ kubectl get pods -n cert-manager 
-        ( should be 3 pods )
     ```
+    
+    * Cert-Manager should deploy 3 pods in `cert-manager` Namespace
 
 2. Download the YAML files for the Load Balancer Controller
     ```
     $ wget https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.6.0/v2_6_0_full.yaml
+
+    $ wget https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.6.0/v2_6_0_ingclass.yaml
     ```
-    1. Save YAML file and Edit it
+    1. Save YAML file and Edit the ServiceAccount and Deployment
 
       SERVICEACCOUNT ( line 655-664 ): 
         
@@ -91,9 +94,7 @@ $ kubectl get svc
             name: aws-load-balancer-controller
             namespace: kube-system
             annotations:
-            * eks.amazonaws.com/role-arn: <IAM ROLE ARN for AWS LB>
-
-            * arn:aws:iam::<ACCOUNT ID>:role/aws-load-balancer-controller-role
+            * eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT ID>:role/aws-load-balancer-controller-role
             
       DEPLOYMENT ( line 903-965 ):
 
@@ -108,14 +109,14 @@ $ kubectl get svc
         * eks-aws-lb
 
 
-    3. Deploy YAML file 
+    2. Deploy YAML file 
 
     * You may have to run it twice, because it is trying to create resources
       and use them at the same time
     ```
       $ kubectl apply -f ../../aws-lb/v2_6_0_full.yaml 
     ```
-    4. Deploy IngressClass & IngressClassParams YAML file
+    3. Deploy IngressClass & IngressClassParams YAML file
     ```
       $ wget https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.6.0/v2_6_0_ingclass.yaml
 
@@ -124,7 +125,7 @@ $ kubectl get svc
     
 ###  Option 2: Helm 
 
-    https://github.com/aws/eks-charts/blob/master/stable/aws-load-balancer-controller/README.md
+- https://github.com/aws/eks-charts/blob/master/stable/aws-load-balancer-controller/README.md
 
 
 1. Add EKS Cluster to Helm Repo
@@ -143,9 +144,7 @@ $ heml repo add eks https://aws.github.io/eks-charts
         name: aws-load-balancer-controller
         namespace: kube-system
         annotations:
-          eks.amazonaws.com/role-arn: <IAM Role ARN for AWS LB Controller>
-
-        * arn:aws:iam::<ACCOUNT ID>:role/aws-load-balancer-controller-role
+        * eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT ID>:role/aws-load-balancer-controller-role
     ```
     2. Apply ServiceAccount
     ```
@@ -193,9 +192,9 @@ $ terraform apply
 3. Confirm "helm_release" resource was deployed
 ```
 $ helm list -n kube-system
-
-* should show aws-load-balancer-controller
 ```
+* should show aws-load-balancer-controller
+
 
 4. Get LB Controller Logs before you deploy an Ingress resource
 ```
